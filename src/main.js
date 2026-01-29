@@ -8,13 +8,15 @@ let locations = [];
 let mapCenter = null;
 let mapZoom = null;
 
+// Fetch model data from JSON file
 async function fetchModelData() {
   const res = await fetch("models.json");
   if (!res.ok) throw new Error("Failed to load model data");
   return res.json();
 }
 
-// Red marker icon (public domain, from https://github.com/pointhi/leaflet-color-markers)
+// Not needed now with the building icon.
+/* // Red marker icon (public domain, from https://github.com/pointhi/leaflet-color-markers)
 const redIcon = new L.Icon({
   iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
@@ -22,7 +24,7 @@ const redIcon = new L.Icon({
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
-});
+}); */
 
 // Example: Custom building icon (uncomment and use if you want a building image)
 const buildingIcon = new L.Icon({
@@ -75,6 +77,7 @@ function addLocationMarkers() {
   });
 }
 
+// This function allows navigation to the AR view for a specific model
 function goToAR(id) {
   if (leafletMap) {
     mapCenter = leafletMap.getCenter();
@@ -83,6 +86,7 @@ function goToAR(id) {
   location.hash = `#/ar/${id}`;
 }
 
+// Function to show or hide the disclaimer banner and instructions
 function showDisclaimer(show) {
   const banner = document.getElementById("disclaimer-banner");
   const instructions = document.getElementById("map-instruction");
@@ -90,6 +94,7 @@ function showDisclaimer(show) {
   if (instructions) instructions.style.display = show ? "block" : "none";
 }
 
+// This function allows rendering the AR view for a specific model
 function renderARView(id) {
   showDisclaimer(false);
   const loc = locations.find((l) => l.id === id);
@@ -99,13 +104,13 @@ function renderARView(id) {
     <div id="ar-view" style="position:relative; min-height:80vh;">
       <button class="btn" onclick="location.hash = '#'" style="margin-bottom: 1rem;">← Back to Map</button>
       <model-viewer
+        id="model-viewer"
         src="${loc.modelUrl}"
         alt="3D model of ${loc.name}"
+        autoplay
         ar
         ar-modes="scene-viewer quick-look webxr"
-        autoplay
         camera-controls
-        ar-scale="fixed"
         max-field-of-view="180deg"
         style="width:100%; max-width:600px; height:60vh; display:block; margin:0 auto;"
       ></model-viewer>
@@ -127,9 +132,9 @@ function renderARView(id) {
         Tap the button to view the model in Augmented Reality.
       </div>
     </div>
-  `;
-}
+  `;}
 
+// This function allows rendering the map view
 function renderMapView() {
   showDisclaimer(true);
   app.innerHTML = `<div id="map" style="height: 100%"></div>`;
@@ -148,7 +153,8 @@ function renderMapView() {
   }).addTo(leafletMap);
 
   // Define the map start origin and zoom level
-  const center = mapCenter || [41.149819, -8.628316]; // You can adjust these coordinates for a more precise center
+  const defaultCenter = [41.453149, -8.288615];
+  const center = defaultCenter; // You can adjust these coordinates for a more precise center
   const zoom = mapZoom || 18; // Increased zoom for a closer view
   leafletMap.setView(center, zoom);
 
@@ -185,6 +191,7 @@ function router() {
     renderMapView();
   } else if (match) {
     renderARView(match[1]);
+    
   } else {
     renderNotFound();
   }
