@@ -177,8 +177,9 @@ function renderARView(id) {
         const model = gltf.scene;
         // Adjust model height so it appears at ground level
         // model.position.y = -1.8; // Phone held at 1.8m
-        // Adjust orientation to align with real north
-        model.rotation.y = (2 * Math.PI) / 3; // 2/3 PI radians rotation
+        // Adjust orientation to align with real north and add extra rotation
+        // Base rotation was 2/3 PI; add 1/2 PI more for correct orientation
+        model.rotation.y = (2 * Math.PI) / 3 + Math.PI / 2; // (2/3 + 1/2) PI = 7/6 PI
         // Optionally scale the model if needed
         // model.scale.set(1, 1, 1);
         locar.add(
